@@ -5,42 +5,53 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      aberto: false,
       frase: '',
-      imgBookClose:
-        'https://media.discordapp.net/attachments/819026805762555914/819028457798893578/251-2515843_nice-red-book.png?width=731&height=480',
+      image: '',
       imgBookOpen:
         'https://media.discordapp.net/attachments/819026805762555914/819027728727670844/unnamed.png',
       frases: [
         {
           nome: 'Arroz',
+          image:
+            'https://cdn.pensador.com/img/imagens/pe/ns/pensador_legendas_de_fotos_01.jpg',
         },
         {
           nome: 'Feijão',
+          image:
+            'https://i.pinimg.com/originals/39/70/d2/3970d2a113a439a136deea2e55728479.jpg',
         },
         {
           nome: 'Detergente',
+          image:
+            'https://i.pinimg.com/originals/76/c8/d5/76c8d57f4538f35ba266135c657f43a2.jpg',
         },
         {
           nome: 'teste',
+          image:
+            'https://i.pinimg.com/474x/8a/b0/4b/8ab04bf101c7330da052b734f1870200.jpg',
         },
         {
           nome: 'caldo',
+          image:
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuTausQqPhhjYO9wJzOiVKDM2gRxhfSu7vzQ&usqp=CAU',
         },
         {
           nome: 'comida',
+          image:
+            'https://pics.me.me/evite-pessoas-que-so-querem-sua-companhia-quando-se-sent-17211043.png',
         },
       ],
     };
   }
   randomPhrase() {
-    let number = parseInt(Math.random() * (this.state.frases.length - 0));
+    let number = Math.floor(Math.random() * this.state.frases.length);
 
     this.setState({
       frase: this.state.frases[number].nome,
-      aberto: true,
+      image: this.state.frases[number].image,
     });
   }
+
   render() {
     return (
       <View style={styles.container}>
@@ -48,9 +59,7 @@ class App extends Component {
           resizeMode="contain"
           style={styles.img}
           source={{
-            uri: this.state.aberto
-              ? this.state.imgBookOpen
-              : this.state.imgBookClose,
+            uri: this.state.image ? this.state.image : this.state.imgBookOpen,
           }}
         />
         <Text styles={styles.txt}>
@@ -77,8 +86,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   img: {
-    width: '50%',
-    height: '20%',
+    width: '100%',
+    height: '30%',
     marginBottom: 30,
   },
   viewTxt: {},
