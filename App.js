@@ -1,109 +1,161 @@
-import React, {Component} from 'react';
-import {View, StyleSheet, Text, TouchableOpacity, Image} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, TextInput, View, FlatList} from 'react-native';
+import {Picker} from '@react-native-picker/picker';
+import {normalize} from './utils/normalizeFont';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      frase: '',
-      image: '',
-      imgBookOpen:
-        'https://media.discordapp.net/attachments/819026805762555914/819027728727670844/unnamed.png',
-      frases: [
-        {
-          nome: 'Arroz',
-          image:
-            'https://cdn.pensador.com/img/imagens/pe/ns/pensador_legendas_de_fotos_01.jpg',
-        },
-        {
-          nome: 'Feijão',
-          image:
-            'https://i.pinimg.com/originals/39/70/d2/3970d2a113a439a136deea2e55728479.jpg',
-        },
-        {
-          nome: 'Detergente',
-          image:
-            'https://i.pinimg.com/originals/76/c8/d5/76c8d57f4538f35ba266135c657f43a2.jpg',
-        },
-        {
-          nome: 'teste',
-          image:
-            'https://i.pinimg.com/474x/8a/b0/4b/8ab04bf101c7330da052b734f1870200.jpg',
-        },
-        {
-          nome: 'caldo',
-          image:
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuTausQqPhhjYO9wJzOiVKDM2gRxhfSu7vzQ&usqp=CAU',
-        },
-        {
-          nome: 'comida',
-          image:
-            'https://pics.me.me/evite-pessoas-que-so-querem-sua-companhia-quando-se-sent-17211043.png',
-        },
-      ],
-    };
-  }
-  randomPhrase() {
-    let number = Math.floor(Math.random() * this.state.frases.length);
+const App = () => {
+  const [nome, setNome] = useState('');
+  const [curso, setCurso] = useState('');
+  const [periodo, setPeriodo] = useState('');
+  const [turno, setTurno] = useState('');
 
-    this.setState({
-      frase: this.state.frases[number].nome,
-      image: this.state.frases[number].image,
-    });
-  }
+  let data = [
+    {
+      nome: 'Sistemas de Informação',
+      valor: 1000,
+    },
+    {
+      nome: 'Administração',
+      valor: 1500,
+    },
+    {
+      nome: 'Psicologia',
+      valor: 900,
+    },
+  ];
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Image
-          resizeMode="contain"
-          style={styles.img}
-          source={{
-            uri: this.state.image ? this.state.image : this.state.imgBookOpen,
-          }}
-        />
-        <Text styles={styles.txt}>
-          {this.state.frase
-            ? this.state.frase
-            : 'Cliente no botão para gerar uma frase'}
-        </Text>
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => {
-            this.randomPhrase();
-          }}>
-          <Text style={styles.txtBtn}>Gerar frase aleatória</Text>
-        </TouchableOpacity>
+  let cursosPicker = data.map((item, key) => {
+    return <Picker.Item key={key} label={item.nome} value={item.nome} />;
+  });
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.textHeader}>Logo</Text>
       </View>
-    );
-  }
-}
+
+      <View style={styles.body}>
+        <View style={styles.form}>
+          <Text style={styles.text}>Selecione os parâmetros:</Text>
+
+          <TextInput
+            style={styles.textInput}
+            onChangeText={setNome}
+            placeholder="Digite seu nome"
+          />
+
+          <View style={styles.picker}>
+            <Picker
+              selectedValue={curso}
+              onValueChange={(itemValue, itemIndex) => setCurso(itemValue)}>
+              <Picker.Item label="Curso" value="" />
+              {cursosPicker}
+            </Picker>
+          </View>
+
+          <View style={styles.picker}>
+            <Picker
+              selectedValue={periodo}
+              onValueChange={(itemValue, itemIndex) => setPeriodo(itemValue)}>
+              <Picker.Item label="Período" value="  " />
+              <Picker.Item label="1" value="1" />
+              <Picker.Item label="2" value="2" />
+              <Picker.Item label="3" value="3" />
+              <Picker.Item label="4" value="4" />
+              <Picker.Item label="5" value="5" />
+              <Picker.Item label="6" value="6" />
+              <Picker.Item label="7" value="7" />
+              <Picker.Item label="8" value="8" />
+            </Picker>
+          </View>
+
+          <View style={styles.picker}>
+            <Picker
+              selectedValue={turno}
+              onValueChange={(itemValue, itemIndex) => setTurno(itemValue)}>
+              <Picker.Item label="Turno" value="" />
+              <Picker.Item label="Diurno" value="Diurno" />
+              <Picker.Item label="Noturno" value="Noturno" />
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.data}>
+          <Text style={styles.title}>Informações inseridas:</Text>
+          <View style={styles.keyValue}>
+            <Text style={styles.key}>Nome:</Text>
+            <Text style={styles.value}>{nome}</Text>
+          </View>
+          <View style={styles.keyValue}>
+            <Text style={styles.key}>Curso:</Text>
+            <Text style={styles.value}>{curso}</Text>
+          </View>
+          <View style={[styles.keyValue, {flex: 1}]}>
+            <View style={[styles.row, {flex: 1}]}>
+              <Text style={styles.key}>Período:</Text>
+              <Text style={[styles.value]}>{periodo}</Text>
+            </View>
+            <View style={[styles.row, {flex: 1}]}>
+              <Text style={styles.key}>Turno:</Text>
+              <Text style={styles.value}>{turno}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+  },
+  header: {
     justifyContent: 'center',
+    height: 60,
+    backgroundColor: 'blue',
   },
-  img: {
-    width: '100%',
-    height: '30%',
-    marginBottom: 30,
+  textHeader: {
+    color: 'white',
+    marginLeft: '5%',
+    fontSize: normalize(24),
   },
-  viewTxt: {},
-  txt: {},
-  btn: {
-    marginTop: 30,
-    width: '50%',
-    height: '6%',
-    borderRadius: 40,
-    borderWidth: 3,
-    borderColor: 'orange',
-    alignItems: 'center',
-    justifyContent: 'center',
+  body: {
+    flex: 1,
+    margin: '8%',
   },
-  txtBtn: {
-    color: 'orange',
+  form: {},
+  text: {
+    marginBottom: '5%',
+    fontSize: normalize(16),
+  },
+  textInput: {
+    padding: '4%',
+    borderWidth: 1,
+    borderColor: 'black',
+  },
+  picker: {
+    borderColor: 'black',
+    borderWidth: 1,
+    marginTop: '3%',
+  },
+  title: {
+    fontSize: normalize(16),
+    marginTop: '5%',
+  },
+  data: {
+    flex: 1,
+  },
+  keyValue: {
+    flexDirection: 'row',
+    marginVertical: '3%',
+  },
+  key: {
+    marginRight: '6%',
+    fontWeight: 'bold',
+  },
+  row: {
+    flexDirection: 'row',
   },
 });
 
