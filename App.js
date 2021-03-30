@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, View, FlatList} from 'react-native';
+import {StyleSheet, Text, TextInput, View} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {normalize} from './utils/normalizeFont';
 
-const App = () => {
+export default App = () => {
   const [nome, setNome] = useState('');
   const [curso, setCurso] = useState('');
   const [periodo, setPeriodo] = useState('');
@@ -12,20 +12,44 @@ const App = () => {
   let data = [
     {
       nome: 'Sistemas de Informação',
-      valor: 1000,
+      valor: 800,
+      periodos: 8,
     },
     {
       nome: 'Administração',
       valor: 1500,
+      periodos: 10,
     },
     {
       nome: 'Psicologia',
       valor: 900,
+      periodos: 6,
     },
   ];
 
-  let cursosPicker = data.map((item, key) => {
-    return <Picker.Item key={key} label={item.nome} value={item.nome} />;
+  let qtdePeriodos = [];
+  for (let i = 0; i < data.length; i++) {
+    if (data[i]) {
+      for (let j = 1; j <= data[i].periodos; j++) {
+        if (data[i].nome == curso) {
+          qtdePeriodos.push({periodo: j});
+        }
+      }
+    }
+  }
+
+  let periodosPicker = qtdePeriodos.map((item, value) => {
+    return (
+      <Picker.Item
+        key={value}
+        label={`${item.periodo}`}
+        value={`${item.periodo}`}
+      />
+    );
+  });
+
+  let cursosPicker = data.map((item, value) => {
+    return <Picker.Item key={value} label={item.nome} value={item.nome} />;
   });
 
   return (
@@ -47,7 +71,10 @@ const App = () => {
           <View style={styles.picker}>
             <Picker
               selectedValue={curso}
-              onValueChange={(itemValue, itemIndex) => setCurso(itemValue)}>
+              onValueChange={(itemValue, itemIndex) => {
+                setCurso(itemValue);
+                setPeriodo('');
+              }}>
               <Picker.Item label="Curso" value="" />
               {cursosPicker}
             </Picker>
@@ -56,16 +83,11 @@ const App = () => {
           <View style={styles.picker}>
             <Picker
               selectedValue={periodo}
-              onValueChange={(itemValue, itemIndex) => setPeriodo(itemValue)}>
-              <Picker.Item label="Período" value="  " />
-              <Picker.Item label="1" value="1" />
-              <Picker.Item label="2" value="2" />
-              <Picker.Item label="3" value="3" />
-              <Picker.Item label="4" value="4" />
-              <Picker.Item label="5" value="5" />
-              <Picker.Item label="6" value="6" />
-              <Picker.Item label="7" value="7" />
-              <Picker.Item label="8" value="8" />
+              onValueChange={(itemValue, itemIndex) => {
+                setPeriodo(itemValue);
+              }}>
+              <Picker.Item label="Período" value="" />
+              {periodosPicker}
             </Picker>
           </View>
 
@@ -93,7 +115,7 @@ const App = () => {
           <View style={[styles.keyValue, {flex: 1}]}>
             <View style={[styles.row, {flex: 1}]}>
               <Text style={styles.key}>Período:</Text>
-              <Text style={[styles.value]}>{periodo}</Text>
+              <Text style={styles.value}>{periodo}</Text>
             </View>
             <View style={[styles.row, {flex: 1}]}>
               <Text style={styles.key}>Turno:</Text>
@@ -158,5 +180,3 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
-
-export default App;
