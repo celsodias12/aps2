@@ -1,182 +1,123 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, View} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
-import {normalize} from './utils/normalizeFont';
+import React, {useState, useEffect} from 'react';
+import {
+  KeyboardAvoidingView,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
-export default App = () => {
-  const [nome, setNome] = useState('');
-  const [curso, setCurso] = useState('');
-  const [periodo, setPeriodo] = useState('');
-  const [turno, setTurno] = useState('');
+import axios from './src/services/api';
+import Card from './src/components/Card';
 
-  let data = [
-    {
-      nome: 'Sistemas de Informação',
-      valor: 800,
-      periodos: 8,
-    },
-    {
-      nome: 'Administração',
-      valor: 1500,
-      periodos: 10,
-    },
-    {
-      nome: 'Psicologia',
-      valor: 900,
-      periodos: 6,
-    },
-  ];
+export default function App() {
+  const [data, setData] = useState([{}]);
+  const [loading, setLoading] = useState(true);
 
-  let qtdePeriodos = [];
-  for (let i = 0; i < data.length; i++) {
-    if (data[i]) {
-      for (let j = 1; j <= data[i].periodos; j++) {
-        if (data[i].nome == curso) {
-          qtdePeriodos.push({periodo: j});
-        }
-      }
+  useEffect(() => {
+    async function getItems() {
+      await axios({
+        url: '/items',
+        method: 'GET',
+      })
+        .then(res => {
+          setData(res.data);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
+    getItems();
+  }, []);
+
+  if (loading) {
+    return (
+      <ActivityIndicator size="large" color="black" style={styles.loading} />
+    );
   }
 
-  let periodosPicker = qtdePeriodos.map((item, value) => {
-    return (
-      <Picker.Item
-        key={value}
-        label={`${item.periodo}`}
-        value={`${item.periodo}`}
-      />
-    );
-  });
-
-  let cursosPicker = data.map((item, value) => {
-    return <Picker.Item key={value} label={item.nome} value={item.nome} />;
-  });
-
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.textHeader}>Logo</Text>
+    <KeyboardAvoidingView style={styles.container}>
+      <View>
+        <Card items={data} />
       </View>
-
       <View style={styles.body}>
-        <View style={styles.form}>
-          <Text style={styles.text}>Selecione os parâmetros:</Text>
-
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setNome}
-            placeholder="Digite seu nome"
+        <TouchableOpacity style={styles.buttonFinalize} activeOpacity={0.7}>
+          <Text style={styles.textButtonFinalize}>FINALIZAR</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonSubmit}
+          activeOpacity={0.7}
+          onPress={() => {
+            Alert.alert(
+              'Pedido efetuado com sucesso!',
+              'Seu pedido será entregue nas próximas horas.',
+            );
+            AsyncStorage.removeItem('quantity');
+          }}>
+          <Image
+            source={{
+              uri:
+                'https://images-ext-2.discordapp.net/external/j8Cem0xGa1v9j5BG5YjYBsd_uk6GsKrmmh6EMXPFGq4/%3Fcaw%3D800/https/stat.ameba.jp/user_images/20181004/23/plusmarket-kanda/e9/8d/p/o0656058914278182582.png?width=535&height=480',
+            }}
+            style={styles.image}
           />
-
-          <View style={styles.picker}>
-            <Picker
-              selectedValue={curso}
-              onValueChange={(itemValue, itemIndex) => {
-                setCurso(itemValue);
-                setPeriodo('');
-              }}>
-              <Picker.Item label="Curso" value="" />
-              {cursosPicker}
-            </Picker>
-          </View>
-
-          <View style={styles.picker}>
-            <Picker
-              selectedValue={periodo}
-              onValueChange={(itemValue, itemIndex) => {
-                setPeriodo(itemValue);
-              }}>
-              <Picker.Item label="Período" value="" />
-              {periodosPicker}
-            </Picker>
-          </View>
-
-          <View style={styles.picker}>
-            <Picker
-              selectedValue={turno}
-              onValueChange={(itemValue, itemIndex) => setTurno(itemValue)}>
-              <Picker.Item label="Turno" value="" />
-              <Picker.Item label="Diurno" value="Diurno" />
-              <Picker.Item label="Noturno" value="Noturno" />
-            </Picker>
-          </View>
-        </View>
-
-        <View style={styles.data}>
-          <Text style={styles.title}>Informações inseridas:</Text>
-          <View style={styles.keyValue}>
-            <Text style={styles.key}>Nome:</Text>
-            <Text style={styles.value}>{nome}</Text>
-          </View>
-          <View style={styles.keyValue}>
-            <Text style={styles.key}>Curso:</Text>
-            <Text style={styles.value}>{curso}</Text>
-          </View>
-          <View style={[styles.keyValue, {flex: 1}]}>
-            <View style={[styles.row, {flex: 1}]}>
-              <Text style={styles.key}>Período:</Text>
-              <Text style={styles.value}>{periodo}</Text>
-            </View>
-            <View style={[styles.row, {flex: 1}]}>
-              <Text style={styles.key}>Turno:</Text>
-              <Text style={styles.value}>{turno}</Text>
-            </View>
-          </View>
-        </View>
+          <Text style={styles.textButtonSubmit}>Realizar Pedido</Text>
+        </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
-};
+}
 
 const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
-  },
-  header: {
-    justifyContent: 'center',
-    height: 60,
-    backgroundColor: 'blue',
-  },
-  textHeader: {
-    color: 'white',
-    marginLeft: '5%',
-    fontSize: normalize(24),
+    marginTop: '5%',
+    marginHorizontal: '5%',
   },
   body: {
     flex: 1,
-    margin: '8%',
+    justifyContent: 'space-between',
   },
-  form: {},
-  text: {
+  buttonFinalize: {
+    backgroundColor: '#c7c7c7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 6,
+  },
+  textButtonFinalize: {
+    fontSize: 20,
+  },
+  buttonSubmit: {
+    flexDirection: 'row',
+    borderRadius: 15,
+    backgroundColor: '#8CD55D',
+    alignItems: 'center',
+    padding: 5,
     marginBottom: '5%',
-    fontSize: normalize(16),
+    marginHorizontal: '2%',
   },
-  textInput: {
-    padding: '4%',
-    borderWidth: 1,
-    borderColor: 'black',
+  image: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+    marginHorizontal: '5%',
   },
-  picker: {
-    borderColor: 'black',
-    borderWidth: 1,
-    marginTop: '3%',
-  },
-  title: {
-    fontSize: normalize(16),
-    marginTop: '5%',
-  },
-  data: {
-    flex: 1,
-  },
-  keyValue: {
-    flexDirection: 'row',
-    marginVertical: '3%',
-  },
-  key: {
-    marginRight: '6%',
+  textButtonSubmit: {
+    color: 'white',
+    fontSize: 30,
     fontWeight: 'bold',
-  },
-  row: {
-    flexDirection: 'row',
+    letterSpacing: 1.5,
   },
 });

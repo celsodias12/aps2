@@ -11,8 +11,8 @@ import com.facebook.react.shell.MainReactPackage;
 import java.util.Arrays;
 import java.util.ArrayList;
 
-// @react-native-picker/picker
-import com.reactnativecommunity.picker.RNCPickerPackage;
+// @react-native-community/async-storage
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 
 public class PackageList {
   private Application application;
@@ -58,7 +58,7 @@ public class PackageList {
   public ArrayList<ReactPackage> getPackages() {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
-      new RNCPickerPackage()
+      new AsyncStoragePackage()
     ));
   }
 }
